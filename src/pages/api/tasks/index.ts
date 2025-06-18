@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Title is required' });
     }
 
-    const task = await prisma.task.create({
+    await prisma.task.create({
       data: { title, status: 'PENDING' },
     });
 

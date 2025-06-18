@@ -60,7 +60,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     try {
       await axios.put(`${API_URL}/${id}`,{id,title});
       await get().getTasks();
-    } catch (error) {
+    } catch {
       set({ error: 'Failed to update task' });
     }
   },

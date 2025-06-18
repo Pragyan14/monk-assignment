@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === 'PUT') {
         const { title, status } = req.body;
         try {
-            const updateData: any = {};
+            const updateData: { title?: string; status?: "PENDING" | "DONE" } = {};
             if (title !== undefined) updateData.title = title;
             if (status !== undefined) updateData.status = status;
             const updatedTask = await prisma.task.update({
