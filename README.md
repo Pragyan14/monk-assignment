@@ -46,7 +46,7 @@ You can test your APIs with Postman:
 
 ### 🚀 Live Demo
 
-👉 [LINK]()
+👉 [LINK](https://monk-assignment-eta.vercel.app/)
 
 ### 🛠 Tech Stack
 - Next.js
