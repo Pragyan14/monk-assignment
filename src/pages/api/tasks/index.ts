@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data: { title, status: 'PENDING' },
     });
 
-    return res.status(201).json(task);
+    return res.status(201).json("Task added successfully");
   }
 
   res.setHeader('Allow', ['GET', 'POST']);

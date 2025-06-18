@@ -15,7 +15,7 @@ export default function TaskFlow() {
 
   useEffect(() => {
     getTasks();
-  }, []);
+  }, [getTasks]);
 
   const handleAdd = async () => {
     await addTask(newTask);

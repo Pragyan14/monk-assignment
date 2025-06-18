@@ -33,14 +33,14 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     try {
       const response = await axios.get(API_URL);     
       set({ tasks: response.data, error: null, hasFetched: true });
-    } catch (err) {
+    } catch{
       set({ error: 'Failed to fetch tasks'});
     }
   },
 
   addTask: async (title) => {
     try {
-      const response = await axios.post(API_URL,{title});
+      await axios.post(API_URL,{title});
       await get().getTasks();
     } catch {
       set({ error: 'Failed to add task' });
