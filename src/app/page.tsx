@@ -1,103 +1,203 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { useState, useEffect } from "react"
+import { Edit2, Trash2, Loader, Check, X } from "lucide-react"
+import { useTaskStore } from "@/store/taskStore"
+import toast from "react-hot-toast";
+
+export default function TaskFlow() {
+
+  const { tasks, addTask, getTasks, deleteTask, hasFetched, error, updateTask, toggleStatus } = useTaskStore();
+
+  const [newTask, setNewTask] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingText, setEditingText] = useState("");
+
+  useEffect(() => {
+    getTasks();
+  }, []);
+
+  const handleAdd = async () => {
+    await addTask(newTask);
+  }
+
+  const toggleTaskStatus = async (id: string, currentStatus: "PENDING" | "DONE") => {
+    await toggleStatus(id, currentStatus);
+  }
+
+  const handleDelete = async (id: string) => {
+    await deleteTask(id);
+    if (!error) {
+      toast.success("Task Deleted")
+    }
+  }
+
+  const handleUpdate = async (id: string, title: string) => {
+    await updateTask(id, title);
+    if (!error) {
+      setEditingId(null)
+      setEditingText("")
+      toast.success("Task Updated")
+    }
+  }
+
+  const startEditing = (id: string, title: string) => {
+    setEditingId(id)
+    setEditingText(title)
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditingText("")
+  }
+
+
+  const totalTasks = tasks.length
+  const pendingTasks = tasks.filter((task) => task.status === "PENDING").length
+  const completedTasks = tasks.filter((task) => task.status === "DONE").length
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      {/* Header  */}
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">TaskFlow</h1>
+          <p className="text-gray-600 text-lg">Simple. Clean. Productive.</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+
+        {/* Input */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-4">
+          <form className="flex flex-col sm:flex-row gap-3" onSubmit={handleAdd}>
+            <input
+              type="text"
+              placeholder="What needs to be done?"
+              value={newTask}
+              onChange={(e) => setNewTask(e.target.value)}
+              required={true}
+              className="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <input
+              type="submit"
+              value="Add Task"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+            />
+          </form>
+        </div>
+
+        {/* Tasks */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 sm:mb-0">Your Tasks</h2>
+          </div>
+
+          <div className="space-y-3">
+            {!hasFetched ? (
+              <Loader className="animate-spin mx-auto" />
+            ) : tasks.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                No tasks yet. Add one above!
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {tasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex items-center gap-4 p-4 justify-between border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    {editingId !== task.id ? (
+                      <>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            checked={task.status === "DONE"}
+                            onChange={() => toggleTaskStatus(task.id, task.status)}
+                            className="w-5 h-5 text-blue-500 rounded focus:ring-blue-500"
+                          />
+                          <p
+                            className={`font-medium ${task.status === "DONE"
+                              ? "text-gray-500 line-through"
+                              : "text-gray-800 "
+                              }`}
+                          >
+                            {task.title}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => startEditing(task.id, task.title)}
+                            className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(task.id)}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex flex-row md:flex-row md:items-center md:justify-between gap-4 w-full">
+                          <div className="flex-1">
+                            <input
+                              type="text"
+                              value={editingText}
+                              onChange={(e) => setEditingText(e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              autoFocus
+                            />
+                          </div>
+
+                          {/* Action buttons */}
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              onClick={cancelEdit}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            >
+                              <X size={24} />
+                            </button>
+                            <button
+                              onClick={() => handleUpdate(editingId, editingText)}
+                              className="p-2 text-green-500 hover:bg-green-50 rounded-lg transition-colors"
+                            >
+                              <Check size={24} />
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </ul>
+            )}
+          </div>
+
+
+        </div>
+
+        {/* Score Section */}
+        <div className="sticky bottom-2">
+          <div className="bg-gradient-to-r from-blue-500/90 to-purple-600/90 rounded-lg p-6 text-white">
+            <div className="grid grid-cols-3 gap-6 text-center">
+              <div>
+                <div className="text-3xl font-bold mb-1">{totalTasks}</div>
+                <div className="text-blue-100">Total Tasks</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold mb-1">{pendingTasks}</div>
+                <div className="text-blue-100">Pending</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold mb-1">{completedTasks}</div>
+                <div className="text-blue-100">Completed</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
